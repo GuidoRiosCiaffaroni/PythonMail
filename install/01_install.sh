@@ -4,7 +4,7 @@
 # Instalador Profesional de Entorno de Desarrollo Python
 # Compatible con Debian 12+, Ubuntu 22.04+, Linux Mint
 # Autor: Linux Expert Refactor
-# Versión: 3.0 (Corregido para PEP 668 & Multi-User)
+# Versión: 3.1 (Corregido idle3 & apt-get CLI)
 # ===============================================================
 
 set -Eeuo pipefail
@@ -69,16 +69,14 @@ touch "$LOG_FILE" || { error "No se pudo crear el archivo de log en $LOG_FILE"; 
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 echo "=============================================="
-echo " INSTALADOR PROFESIONAL DE PYTHON v3.0"
+echo " INSTALADOR PROFESIONAL DE PYTHON v3.1"
 echo "=============================================="
 
 #############################
 # Conexión a Internet
 #############################
 info "Comprobando conexión a Internet..."
-# Usamos un puerto HTTP/DNS común en lugar de asumir que ICMP (ping) está permitido
 if ! command -v curl &>/dev/null && ! command -v wget &>/dev/null; then
-    # Si no hay herramientas, usamos una redirección TCP nativa de Bash a los DNS de Cloudflare
     exec 3<>/dev/tcp/1.1.1.1/53 || { error "No hay conexión a Internet detectada."; exit 1; }
     exec 3>&-
 else
@@ -109,7 +107,7 @@ apt-get -y upgrade
 #############################
 PACKAGES=(
     python3 python3-full python3-dev python3-pip python3-venv 
-    python3-setuptools python3-wheel python3-tk idle-python3
+    python3-setuptools python3-wheel python3-tk idle3
     git curl wget vim nano tree htop zip unzip build-essential 
     libssl-dev libffi-dev zlib1g-dev libbz2-dev libreadline-dev 
     libsqlite3-dev tk-dev xz-utils libxml2-dev libxmlsec1-dev 
@@ -136,11 +134,11 @@ VENV_PATH="$WORKSPACE/venv"
 info "Configurando el entorno de trabajo en $WORKSPACE..."
 mkdir -p "$WORKSPACE"
 
-# Evitamos romper APT: Creamos un entorno virtual aislado en /opt
+# Creación de entorno virtual aislado
 info "Creando entorno virtual Python..."
 python3 -m venv "$VENV_PATH"
 
-# Forzamos la actualización de herramientas críticas DENTRO del entorno virtual
+# Actualización de herramientas críticas DENTRO del entorno virtual
 info "Actualizando pip, setuptools y wheel dentro del entorno virtual..."
 "$VENV_PATH/bin/pip" install --upgrade pip setuptools wheel
 
@@ -158,9 +156,7 @@ PYTHON_LIBS=(
 info "Instalando paquetes científicos y de desarrollo en el entorno virtual..."
 "$VENV_PATH/bin/pip" install --upgrade "${PYTHON_LIBS[@]}"
 
-# Ajuste crítico de permisos:
-# Permitimos que todos los usuarios del sistema lean/ejecuten el venv,
-# pero le devolvemos la propiedad al usuario que ejecutó el sudo para que no tenga problemas de permisos en su IDE.
+# Ajuste de permisos para evitar conflictos multiusuario
 info "Configurando permisos del Workspace para el usuario '$REAL_USER'..."
 chown -R "$REAL_USER:$REAL_USER" "$WORKSPACE"
 chmod -R 755 "$WORKSPACE"
