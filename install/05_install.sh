@@ -31,3 +31,6 @@ else
     echo "Configuración añadida con éxito a $CONFIG_FILE."
     echo "Para activar 'll' en esta terminal ejecuta: source $CONFIG_FILE"
 fi
+
+
+source /root/.bashrc
