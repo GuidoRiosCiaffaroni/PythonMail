@@ -1,0 +1,36 @@
+# ==========================================
+# CONFIGURACIÓN DE NEOMUTT PARA OUTLOOK
+# ==========================================
+
+# Datos de la cuenta
+set imap_user = "guido.rios@redsalud.gob.cl"
+set imap_pass = ""
+set smtp_url = "smtp://guido.rios@redsalud.gob.cl:Gr123456..@smtp.office365.com:587/"
+set from = "guido.rios@redsalud.gob.cl"
+set realname = "guido.rios"
+
+# Servidores y Carpetas Remotas (IMAP)
+set folder = "imaps://outlook.office365.com:993"
+set spoolfile = "+INBOX"
+set postponed = "+Drafts"
+set record = "+Sent"
+
+# Optimización de Caché (Acelera la carga de correos)
+set header_cache = "~/.mutt/cache/headers"
+set message_cachedir = "~/.mutt/cache/bodies"
+
+# Ajustes de Conexión y Rendimiento
+set mail_check = 60
+set timeout = 15
+set imap_keepalive = 300
+
+# Interfaz Visual Básica
+set sidebar_visible = yes
+set sidebar_width = 24
+set sidebar_format = "%B%?F? [%F]?%* %?N?%N/?"
+set mail_check_stats = yes
+
+# Enlaces de teclas para la barra lateral (Navegar con Flechas)
+bind index,pager \033[A sidebar-prev    # Alt + Flecha Arriba
+bind index,pager \033[B sidebar-next    # Alt + Flecha Abajo
+bind index,pager \033[C sidebar-open    # Alt + Flecha Derecha
